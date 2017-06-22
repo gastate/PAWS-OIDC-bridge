@@ -145,7 +145,7 @@ PAWS_OIDC_bridge = {
 	await_mgr: function( callback, delay=0 ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.await_mgr";
 		console.log( fn+" invoked" );
-		let step = 100;
+		let step = PAWS_OIDC_bridge.await_interval || 100;
 		if( this.mgr ) { callback(); }
 		else {
 			console.log( fn+": delay =", delay );

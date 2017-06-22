@@ -1,3 +1,4 @@
+PAWS_OIDC_bridge.await_interval = 100;
 PAWS_OIDC_bridge.ENV = {
 	loginSettings: {
 		authority: "https://idp-d.gsu.edu/",

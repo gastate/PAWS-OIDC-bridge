@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>PAWS-OIDC-bridge Test Page</title>
+		<!--<script src="oidc-client.js"></script>-->
+		<script src="PAWS-OIDC-bridge.js"></script>
+	</head>
+	<body>
+		<h1>PAWS-OIDC-bridge Test Page</h1>
+		<div>
+			<p>
+				<button onclick="PAWS_OIDC_bridge.login()">Silent Login</button>
+				<span>PAWS should do this when it's loaded</span>
+			</p><p>
+				<button onclick="PAWS_OIDC_bridge.logout( (data)=>{alert(data.failed?'Logout Failed!':'Logout Succeed');} )">Silent Logout</button>
+				<span>PAWS should do this before its own logout</span>
+			</p>
+			</p><p>
+				<button onclick="PAWS_OIDC_bridge.popup_login()">Popup Login</button>
+				<span>PAWS should not do this (for testing only)</span>
+			</p>
+			<br/>
+			<div id="PAWS-OIDC-bridge-status"></div>
+		</div>
+		<script>PAWS_OIDC_bridge.login()</script>
+	</body>
+</html>

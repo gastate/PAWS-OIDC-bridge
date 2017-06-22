@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<title>PAWS-OIDC-bridge Popup Login Callback Page</title>
+		<script src="PAWS-OIDC-bridge.js"></script>
+	</head>
+	<body>
+		<h1>PAWS-OIDC-bridge Popup Login Callback Page</h1>
+		<div>
+			<p>This page should be loaded in login popup window, redirected from the auth server.  It will attempt to pass login information to the parent window.</p>
+			<div id="PAWS-OIDC-bridge-status"></div>
+		</div>
+		<script>PAWS_OIDC_bridge.callback_popup()</script>
+	</body>
+</html>

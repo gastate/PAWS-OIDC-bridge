@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<title>PAWS-OIDC-bridge Silent Logout Helper Page</title>
+		<script src="PAWS-OIDC-bridge.js"></script>
+	</head>
+	<body>
+		<h1>PAWS-OIDC-bridge Silent Logout Helper Page</h1>
+		<div>
+			<p>This page should be loaded in a hidden iframe.  It will attempt to pass login information to the iframe parent.</p>
+			<div id="PAWS-OIDC-bridge-status"></div>
+		</div>
+		<script>PAWS_OIDC_bridge.helper_logout()</script>
+	</body>
+</html>

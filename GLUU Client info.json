@@ -1,0 +1,32 @@
+{
+    "client_id": "@!DE0A.9C27.805E.9101!0001!2E8F.F37E!0008!48AF.805B",
+    "client_secret": "ae6ee1df-6650-479f-a0f5-a4c74e900e2e",
+    "registration_access_token": "8f9787db-50f0-4b75-be18-5494f804b0ae",
+    "registration_client_uri": "https://idp-d.gsu.edu/oxauth/seam/resource/restv1/oxauth/register?client_id=@!DE0A.9C27.805E.9101!0001!2E8F.F37E!0008!48AF.805B",
+    "client_id_issued_at": 1497634874,
+    "client_secret_expires_at": 1497721274,
+    "redirect_uris": [
+        "https://seed.gluu.org/oxauth-rp/home.seam"
+    ],
+    "response_types": [
+        "id_token",
+        "code",
+        "token"
+    ],
+    "application_type": "web",
+    "contacts": [
+        "ssterling3@gsu.edu"
+    ],
+    "client_name": "PAWS bridge",
+    "subject_type": "public",
+    "id_token_signed_response_alg": "RS256",
+    "token_endpoint_auth_method": "client_secret_basic",
+    "require_auth_time": false,
+    "logout_session_required": false,
+    "scopes": [
+        "email",
+        "profile",
+        "openid",
+        "gsupersonpantherid"
+    ]
+}

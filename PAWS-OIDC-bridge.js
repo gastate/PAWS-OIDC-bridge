@@ -24,29 +24,30 @@ PAWS_OIDC_bridge = {
 		this.loadscripts( ["oidc-client.js","PAWS-OIDC-bridge-env.js"], () => {
 			this.await_prop( "ENV", () => {
 				console.log( fn+": environment loaded" );
-				this.mgr = new Oidc.UserManager( this.ENV.loginSettings );
-				this.mgr.events.addUserLoaded( (user) => { 
+				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
+				mgr.events.addUserLoaded( (user) => { 
 					this.user = user;
 					console.log( fn+"/UserLoaded: ", this.user );
 					this.update_status( "Loaded User: "+JSON.stringify(this.user.profile) );
 				} );
-				this.mgr.events.addUserUnloaded( (...args) => { 
+				mgr.events.addUserUnloaded( (...args) => { 
 					console.log( fn+"/UserUnloaded: ", args );
 				} );
-				this.mgr.events.addAccessTokenExpiring( (...args) => { 
+				mgr.events.addAccessTokenExpiring( (...args) => { 
 					console.log( fn+"/AccessTokenExpiring: ", args );
 				} );
-				this.mgr.events.addAccessTokenExpired( (...args) => { 
+				mgr.events.addAccessTokenExpired( (...args) => { 
 					console.log( fn+"/AccessTokenExpired: ", args );
 				} );
-				this.mgr.events.addSilentRenewError( (...args) => { 
+				mgr.events.addSilentRenewError( (...args) => { 
 					console.log( fn+"/SilentRenewError: ", args );
 				} );
-				this.mgr.events.addUserSignedOut( (...args) => { 
+				mgr.events.addUserSignedOut( (...args) => { 
 					console.log( fn+"/UserSignedOut: ", args );
 				} );
 				console.log( fn+": UserManager is ready." );
 				this.update_status( fn+": UserManager is ready." );
+				this.mgr = mgr;
 			} );
 		} );
 	},
@@ -149,16 +150,17 @@ PAWS_OIDC_bridge = {
 	},
 	await_prop: function( prop, callback, delay=0 ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.await_prop";
-		console.log( fn+" invoked" );
+		console.log( fn+" invoked; awaiting "+prop );
 		let step = 111;
 		if( this.ENV && this.ENV.await_interval ) { step = this.ENV.await_interval; }
 		if( undefined === this[prop] ) {
-			console.log( fn+": delay =", delay );
-			this.update_status( fn+": delay = "+delay );
+			console.log( fn+": prop = ", prop, "; delay =", delay );
+			if( 0 == delay ) { this.update_status( fn+": waiting for "+prop ); }
 			delay += step
 			setTimeout( () => this.await_prop(prop,callback,delay), step );
 		} else {
-			 callback();
+			this.update_status( fn+": waited "+delay+"s for "+prop );
+			callback();
 		}
 	},
 	helper_logout: function() {

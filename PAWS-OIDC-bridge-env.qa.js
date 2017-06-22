@@ -1,5 +1,5 @@
-PAWS_OIDC_bridge.await_interval = 1000;
 PAWS_OIDC_bridge.ENV = {
+	await_interval: 400,
 	loginSettings: {
 		authority: "https://idp-qa.gsu.edu/",
 		client_id: "",
@@ -14,11 +14,11 @@ PAWS_OIDC_bridge.ENV = {
 		filterProtocolClaims: false,
 		loadUserInfo: true,
 		revokeAccessTokenOnSignout: true
-	}
-}
-PAWS_OIDC_bridge.uri_logout = "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/logout_helper.html";
-PAWS_OIDC_bridge.status_elm = "PAWS-OIDC-bridge-status";
-PAWS_OIDC_bridge.iframe_style = { 
-	display: "none",
-	visibility: "hidden"
+	},
+	uri_logout: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/logout_helper.html",
+	status_elm: "PAWS-OIDC-bridge-status",
+	iframe_style: { 
+		display: "none",
+		visibility: "hidden"
+	},
 }

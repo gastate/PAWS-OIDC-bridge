@@ -22,36 +22,38 @@ PAWS_OIDC_bridge = {
 		console.log( fn+": href = ", this.initial_href );
 
 		this.loadscripts( ["oidc-client.js","PAWS-OIDC-bridge-env.js"], () => {
-			console.log( fn+": oidc-client loaded, environment loaded" );
-			this.mgr = new Oidc.UserManager( this.ENV.loginSettings );
-			this.mgr.events.addUserLoaded( (user) => { 
-				this.user = user;
-				console.log( fn+"/UserLoaded: ", this.user );
-				this.update_status( "Loaded User: "+JSON.stringify(this.user.profile) );
+			this.await_prop( "ENV", () => {
+				console.log( fn+": environment loaded" );
+				this.mgr = new Oidc.UserManager( this.ENV.loginSettings );
+				this.mgr.events.addUserLoaded( (user) => { 
+					this.user = user;
+					console.log( fn+"/UserLoaded: ", this.user );
+					this.update_status( "Loaded User: "+JSON.stringify(this.user.profile) );
+				} );
+				this.mgr.events.addUserUnloaded( (...args) => { 
+					console.log( fn+"/UserUnloaded: ", args );
+				} );
+				this.mgr.events.addAccessTokenExpiring( (...args) => { 
+					console.log( fn+"/AccessTokenExpiring: ", args );
+				} );
+				this.mgr.events.addAccessTokenExpired( (...args) => { 
+					console.log( fn+"/AccessTokenExpired: ", args );
+				} );
+				this.mgr.events.addSilentRenewError( (...args) => { 
+					console.log( fn+"/SilentRenewError: ", args );
+				} );
+				this.mgr.events.addUserSignedOut( (...args) => { 
+					console.log( fn+"/UserSignedOut: ", args );
+				} );
+				console.log( fn+": UserManager is ready." );
+				this.update_status( fn+": UserManager is ready." );
 			} );
-			this.mgr.events.addUserUnloaded( (...args) => { 
-				console.log( fn+"/UserUnloaded: ", args );
-			} );
-			this.mgr.events.addAccessTokenExpiring( (...args) => { 
-				console.log( fn+"/AccessTokenExpiring: ", args );
-			} );
-			this.mgr.events.addAccessTokenExpired( (...args) => { 
-				console.log( fn+"/AccessTokenExpired: ", args );
-			} );
-			this.mgr.events.addSilentRenewError( (...args) => { 
-				console.log( fn+"/SilentRenewError: ", args );
-			} );
-			this.mgr.events.addUserSignedOut( (...args) => { 
-				console.log( fn+"/UserSignedOut: ", args );
-			} );
-			console.log( fn+": UserManager is ready." );
-			this.update_status( fn+": UserManager is ready." );
 		} );
 	},
 	login: function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.login";
 		console.log( fn+" invoked" );
-		this.await_mgr( () => {
+		this.await_prop( "mgr", () => {
 			this.mgr.signinSilent().then( () => {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
@@ -66,7 +68,7 @@ PAWS_OIDC_bridge = {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout";
 		console.log( fn+" invoked" );
 		let tag = document.createElement("iframe");
-		if( this.iframe_style ) { for( key in this.iframe_style ) { tag.style[key] = this.iframe_style[key]; } }
+		if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
 		tag.setAttribute( "src", this.uri_logout+"?"+(new Date()).toISOString() );
 		tag.setAttribute( "sandbox", "allow-scripts allow-same-origin" ); // this should prevent iframe from navigating top window
 		let listener = (event) => {
@@ -98,7 +100,7 @@ PAWS_OIDC_bridge = {
 	popup_login: function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.popup_login";
 		console.log( fn+" invoked" );
-		this.await_mgr( () => {
+		this.await_prop( "mgr", () => {
 			this.mgr.signinPopup().then( () => {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
@@ -133,31 +135,36 @@ PAWS_OIDC_bridge = {
 		document.head.appendChild(tag);
 	},
 	update_status: function(message) {
-		if( this.status_elm ) {
-			let elm = document.getElementById( this.status_elm );
+		let fn = this.depth+">PAWS_OIDC_bridge.update_status";
+		if( this.ENV && this.ENV.status_elm ) {
+			let elm = document.getElementById( this.ENV.status_elm );
 			if( elm ) {
 				let tag = document.createElement("p");
 				tag.innerText = message;
 				elm.appendChild(tag)
 			}
+		} else {
+			console.warn( fn+": No destination for message -- ", message );
 		}
 	},
-	await_mgr: function( callback, delay=0 ) {
-		let fn = this.depth+">PAWS_OIDC_bridge.await_mgr";
+	await_prop: function( prop, callback, delay=0 ) {
+		let fn = this.depth+">PAWS_OIDC_bridge.await_prop";
 		console.log( fn+" invoked" );
-		let step = PAWS_OIDC_bridge.await_interval || 100;
-		if( this.mgr ) { callback(); }
-		else {
+		let step = 111;
+		if( this.ENV && this.ENV.await_interval ) { step = this.ENV.await_interval; }
+		if( undefined === this[prop] ) {
 			console.log( fn+": delay =", delay );
 			this.update_status( fn+": delay = "+delay );
 			delay += step
-			setTimeout( () => this.await_mgr(callback,delay), step );
+			setTimeout( () => this.await_prop(prop,callback,delay), step );
+		} else {
+			 callback();
 		}
 	},
 	helper_logout: function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.helper_logout";
 		console.log( fn+" invoked" );
-		this.await_mgr( () => {
+		this.await_prop( "mgr", () => {
 			this.mgr.signoutRedirect().then( () => {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
@@ -173,7 +180,7 @@ PAWS_OIDC_bridge = {
 	callback_silent: function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_silent";
 		console.log( fn+" invoked" );
-		this.await_mgr( () => {
+		this.await_prop( "mgr", () => {
 			this.mgr.signinSilentCallback( this.initial_href ).then( () => {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
@@ -195,7 +202,7 @@ PAWS_OIDC_bridge = {
 	callback_popup: function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_popup";
 		console.log( fn+" invoked" );
-		this.await_mgr( () => {
+		this.await_prop( "mgr", () => {
 			this.mgr.signinPopupCallback( this.initial_href ).then( () => {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );

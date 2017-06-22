@@ -10,6 +10,7 @@ PAWS_OIDC_bridge.ENV = {
 		response_type: 'id_token token',
 		scope: "openid profile gsupersonpantherid",
 		automaticSilentRenew: true,
+		silentRequestTimeout: 6000, //ms
 		monitorSession: true,
 		filterProtocolClaims: false,
 		loadUserInfo: true,

@@ -68,35 +68,37 @@ PAWS_OIDC_bridge = {
 	logout: function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout";
 		console.log( fn+" invoked" );
-		let tag = document.createElement("iframe");
-		if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
-		tag.setAttribute( "src", this.uri_logout+"?"+(new Date()).toISOString() );
-		tag.setAttribute( "sandbox", "allow-scripts allow-same-origin" ); // this should prevent iframe from navigating top window
-		let listener = (event) => {
-			console.log( fn+"/Event: ", event );
-			if( event.source === tag.contentWindow ) {
-				console.log( fn+"/Event: Processing Event from iframe" );
-				tag.remove();
-				window.removeEventListener( "message", listener );
-				console.log( fn+"/Event: data = ", event.data );
-				let data = JSON.parse( event.data );
-				console.log( fn+"/Event: data = ", data );
-				if( data.failure ) {
-					let message = data; if( data.error ) { message = data.error; if( data.error.message ) { message = data.error.message; } }
-					console.error( fn+"/Event: Logout failed -- ", message );
-					this.update_status( fn+"/Event: Logout failed -- " + message );
+		this.await_prop( "ENV", () => {
+			let tag = document.createElement("iframe");
+			if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
+			tag.setAttribute( "src", this.ENV.uri_logout+"?"+(new Date()).toISOString() );
+			tag.setAttribute( "sandbox", "allow-scripts allow-same-origin" ); // this should prevent iframe from navigating top window
+			let listener = (event) => {
+				console.log( fn+"/Event: ", event );
+				if( event.source === tag.contentWindow ) {
+					console.log( fn+"/Event: Processing Event from iframe" );
+					tag.remove();
+					window.removeEventListener( "message", listener );
+					console.log( fn+"/Event: data = ", event.data );
+					let data = JSON.parse( event.data );
+					console.log( fn+"/Event: data = ", data );
+					if( data.failure ) {
+						let message = data; if( data.error ) { message = data.error; if( data.error.message ) { message = data.error.message; } }
+						console.error( fn+"/Event: Logout failed -- ", message );
+						this.update_status( fn+"/Event: Logout failed -- " + message );
+					} else {
+						console.log( fn+"/Event: Logout succeded" );
+						this.update_status( fn+"/Event: Logout succeded" );
+					}
+					if( callback ) { callback( data ); }
 				} else {
-					console.log( fn+"/Event: Logout succeded" );
-					this.update_status( fn+"/Event: Logout succeded" );
+					console.log( fn+"/Event: Ignoring Event NOT from iframe" );
 				}
-				if( callback ) { callback( data ); }
-			} else {
-				console.log( fn+"/Event: Ignoring Event NOT from iframe" );
 			}
-		}
-		window.addEventListener( "message", listener );
-		this.update_status( fn+": opening iframe" );
-		document.body.appendChild(tag);
+			window.addEventListener( "message", listener );
+			this.update_status( fn+": opening iframe" );
+			document.body.appendChild(tag);
+		} );
 	},
 	popup_login: function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.popup_login";
@@ -150,16 +152,17 @@ PAWS_OIDC_bridge = {
 	},
 	await_prop: function( prop, callback, delay=0 ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.await_prop";
-		console.log( fn+" invoked; awaiting "+prop );
-		let step = 111;
+		// console.log( fn+" invoked; awaiting "+prop );
+		let step = 1000;
 		if( this.ENV && this.ENV.await_interval ) { step = this.ENV.await_interval; }
 		if( undefined === this[prop] ) {
-			console.log( fn+": prop = ", prop, "; delay =", delay );
 			if( 0 == delay ) { this.update_status( fn+": waiting for "+prop ); }
 			delay += step
+			console.log( fn+":", prop, delay );
 			setTimeout( () => this.await_prop(prop,callback,delay), step );
 		} else {
-			this.update_status( fn+": waited "+delay+"s for "+prop );
+			// console.log( fn+": waited "+delay+"ms for "+prop );
+			this.update_status( fn+": waited "+delay+"ms for "+prop );
 			callback();
 		}
 	},

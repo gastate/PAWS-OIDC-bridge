@@ -17,7 +17,6 @@ PAWS_OIDC_bridge.ENV = {
 		revokeAccessTokenOnSignout: true
 	},
 	uri_logout: "https://cdn.gsu.edu/PAWS-OIDC-bridge/logout_helper.html",
-	status_elm: "PAWS-OIDC-bridge-status",
 	iframe_style: { 
 		display: "none",
 		visibility: "hidden"

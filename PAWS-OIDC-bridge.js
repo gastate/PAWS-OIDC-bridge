@@ -226,3 +226,4 @@ PAWS_OIDC_bridge = {
 }
 
 PAWS_OIDC_bridge.main();
+PAWS_OIDC_bridge.login();

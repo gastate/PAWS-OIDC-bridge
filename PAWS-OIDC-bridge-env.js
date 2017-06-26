@@ -1,3 +1,4 @@
+if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }
 PAWS_OIDC_bridge.ENV = {
 	await_interval: 101,
 	loginSettings: {

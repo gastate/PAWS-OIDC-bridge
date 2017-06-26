@@ -11,7 +11,7 @@
 				<button onclick="PAWS_OIDC_bridge.login()">Silent Login</button>
 				<span>Happens automatically when loaded (run again to re-test after logout)</span>
 			</p><p>
-				<button onclick="PAWS_OIDC_bridge.logout( (data)=>{alert(data.failed?'Logout Failed!':'Logout Succeed');} )">Silent Logout</button>
+				<button onclick="PAWS_OIDC_bridge.logout( (data)=>{alert(data.failure?'Logout Failed! -- '+data.error.message:'Logout Succeed');} )">Silent Logout</button>
 				<span>PAWS should do this before its own logout</span>
 			</p>
 			</p><p>
@@ -21,6 +21,6 @@
 			<br/>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
-		<script>PAWS_OIDC_bridge.login()</script>
+		<!--<script>PAWS_OIDC_bridge.login()</script>-->
 	</body>
 </html>

@@ -3,6 +3,8 @@ if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }
 PAWS_OIDC_bridge.main = function() {
 		let fn = "PAWS_OIDC_bridge.main";
 		this.initial_href = window.location.href;
+		this.source = document.currentScript.src;
+		this.baseURL = this.source.substring(0,this.source.lastIndexOf("/")+1);
 
 		let iframe = ( parent !== window );
 		if( !iframe ) {
@@ -22,8 +24,8 @@ PAWS_OIDC_bridge.main = function() {
 		console.log( fn+": href = ", this.initial_href );
 
 		let scripts = [];
-		if( typeof Oidc === "undefined" ) { scripts.push( "oidc-client.js" ); }
-		if( typeof this.ENV === "undefined" ) { scripts.push( "PAWS-OIDC-bridge-env.js" ); }
+		if( typeof Oidc === "undefined" ) { scripts.push( this.baseURL+"oidc-client.js" ); }
+		if( typeof this.ENV === "undefined" ) { scripts.push( this.baseURL+"PAWS-OIDC-bridge-env.js" ); }
 
 		if( 0 >= scripts.length ) {
 			this.initialize();

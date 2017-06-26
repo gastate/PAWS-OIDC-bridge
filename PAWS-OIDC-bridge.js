@@ -1,6 +1,6 @@
 
-PAWS_OIDC_bridge = {
-	main: function() {
+if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }
+PAWS_OIDC_bridge.main = function() {
 		let fn = "PAWS_OIDC_bridge.main";
 		this.initial_href = window.location.href;
 
@@ -21,7 +21,20 @@ PAWS_OIDC_bridge = {
 		console.log( fn+" invoked" );
 		console.log( fn+": href = ", this.initial_href );
 
-		this.loadscripts( ["oidc-client.js","PAWS-OIDC-bridge-env.js"], () => {
+		let scripts = [];
+		if( typeof Oidc === "undefined" ) { scripts.push( "oidc-client.js" ); }
+		if( typeof this.ENV === "undefined" ) { scripts.push( "PAWS-OIDC-bridge-env.js" ); }
+
+		if( 0 >= scripts.length ) {
+			this.initialize();
+		} else {
+			this.loadscripts( scripts, () => {
+				this.initialize();
+			} );
+		}
+	};
+PAWS_OIDC_bridge.initialize = function() {
+		let fn = "PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				console.log( fn+": environment loaded" );
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
@@ -49,9 +62,8 @@ PAWS_OIDC_bridge = {
 				this.update_status( fn+": UserManager is ready." );
 				this.mgr = mgr;
 			} );
-		} );
-	},
-	login: function() {
+		}
+PAWS_OIDC_bridge.login = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.login";
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
@@ -64,8 +76,8 @@ PAWS_OIDC_bridge = {
 			} );
 			console.log( fn+": In Progress..." );
 		} );
-	},
-	logout: function( callback ) {
+	};
+PAWS_OIDC_bridge.logout = function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout";
 		console.log( fn+" invoked" );
 		this.await_prop( "ENV", () => {
@@ -73,12 +85,14 @@ PAWS_OIDC_bridge = {
 			if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
 			tag.setAttribute( "src", this.ENV.uri_logout+"?"+(new Date()).toISOString() );
 			tag.setAttribute( "sandbox", "allow-scripts allow-same-origin" ); // this should prevent iframe from navigating top window
-			let listener = (event) => {
+			let timeout, listener;
+			listener = (event) => {
 				console.log( fn+"/Event: ", event );
 				if( event.source === tag.contentWindow ) {
 					console.log( fn+"/Event: Processing Event from iframe" );
-					tag.remove();
+					clearTimeout(timeout);
 					window.removeEventListener( "message", listener );
+					tag.remove();
 					console.log( fn+"/Event: data = ", event.data );
 					let data = JSON.parse( event.data );
 					console.log( fn+"/Event: data = ", data );
@@ -97,10 +111,18 @@ PAWS_OIDC_bridge = {
 			}
 			window.addEventListener( "message", listener );
 			this.update_status( fn+": opening iframe" );
+			timeout = setTimeout( () => {
+				window.removeEventListener( "message", listener );
+				tag.remove();
+				let message = "Logout request timed out after "+this.ENV.loginSettings.silentRequestTimeout/1000+" seconds";
+				console.error( fn+"/Event: Logout failed -- ", message );
+				this.update_status( fn+"/Event: Logout failed -- " + message );
+				if( callback ) { callback( { failure:true, error:new Error(message) } ); }
+			}, this.ENV.loginSettings.silentRequestTimeout );
 			document.body.appendChild(tag);
 		} );
-	},
-	popup_login: function() {
+	};
+PAWS_OIDC_bridge.popup_login = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.popup_login";
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
@@ -113,8 +135,8 @@ PAWS_OIDC_bridge = {
 			} );
 			console.log( fn+": In Progress..." );
 		} );
-	},
-	loadscripts: function(urls,callback) {
+	};
+PAWS_OIDC_bridge.loadscripts = function(urls,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscripts";
 		console.log( fn+" invoked" );
 		let count = urls.length;
@@ -124,8 +146,8 @@ PAWS_OIDC_bridge = {
 				if( 0 == count && callback ) { callback(); }
 			} );
 		}
-	},
-	loadscript: function(url,callback) {
+	};
+PAWS_OIDC_bridge.loadscript = function(url,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscript";
 		console.log( fn+" invoked" );
 		let tag = document.createElement("script");
@@ -136,8 +158,8 @@ PAWS_OIDC_bridge = {
 			if(callback) { callback(); }
 		};
 		document.head.appendChild(tag);
-	},
-	update_status: function(message) {
+	};
+PAWS_OIDC_bridge.update_status = function(message) {
 		let fn = this.depth+">PAWS_OIDC_bridge.update_status";
 		if( this.ENV && this.ENV.status_elm ) {
 			let elm = document.getElementById( this.ENV.status_elm );
@@ -149,8 +171,8 @@ PAWS_OIDC_bridge = {
 		} else {
 			console.warn( fn+": No destination for message -- ", message );
 		}
-	},
-	await_prop: function( prop, callback, delay=0 ) {
+	};
+PAWS_OIDC_bridge.await_prop = function( prop, callback, delay=0 ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.await_prop";
 		// console.log( fn+" invoked; awaiting "+prop );
 		let step = 1000;
@@ -165,8 +187,8 @@ PAWS_OIDC_bridge = {
 			this.update_status( fn+": waited "+delay+"ms for "+prop );
 			callback();
 		}
-	},
-	helper_logout: function() {
+	};
+PAWS_OIDC_bridge.helper_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.helper_logout";
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
@@ -181,8 +203,8 @@ PAWS_OIDC_bridge = {
 			} );
 			console.log( fn+": In Progress..." );
 		} );
-	},
-	callback_silent: function() {
+	}
+PAWS_OIDC_bridge.callback_silent = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_silent";
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
@@ -195,16 +217,16 @@ PAWS_OIDC_bridge = {
 			} );
 			console.log( fn+": In Progress..." );
 		} );
-	},
-	callback_logout: function() {
+	};
+PAWS_OIDC_bridge.callback_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_logout";
 		console.log( fn+" invoked" );
 		console.log( fn+": href = ", this.initial_href );
 		let message = JSON.stringify( { failure: false, href: this.initial_href } );
 		console.log( fn+": message =", message );
 		parent.postMessage( message, "*" );
-	},
-	callback_popup: function() {
+	};
+PAWS_OIDC_bridge.callback_popup = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_popup";
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
@@ -217,13 +239,12 @@ PAWS_OIDC_bridge = {
 			} );
 			console.log( fn+": In Progress..." );
 		} );
-	},
-	logout_handler: function() {
+	};
+PAWS_OIDC_bridge.logout_handler = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout_handler";
 		console.log( fn+" invoked" );
 		console.log( fn+": No cleanup needed" );
-	}
-}
+	};
 
 PAWS_OIDC_bridge.main();
 PAWS_OIDC_bridge.login();

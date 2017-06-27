@@ -36,7 +36,7 @@ PAWS_OIDC_bridge.main = function() {
 		}
 	};
 PAWS_OIDC_bridge.initialize = function() {
-		let fn = "PAWS_OIDC_bridge.initialize";
+		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				console.log( fn+": environment loaded" );
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
@@ -63,6 +63,15 @@ PAWS_OIDC_bridge.initialize = function() {
 				console.log( fn+": UserManager is ready." );
 				this.update_status( fn+": UserManager is ready." );
 				this.mgr = mgr;
+				// console.log( fn+": AUTOLOGIN = ", this.AUTOLOGIN );
+				if( false != this.AUTOLOGIN ) {
+					console.log( fn+": Attempting automatic login" );
+					this.update_status( fn+": Attempting automatic login" );
+					this.login();
+				} else {
+					console.log( fn+": Automatic login disabled" );
+					this.update_status( fn+": Automatic login disabled" );
+				}
 			} );
 		}
 PAWS_OIDC_bridge.login = function() {
@@ -70,11 +79,11 @@ PAWS_OIDC_bridge.login = function() {
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			this.mgr.signinSilent().then( () => {
-				console.log( fn+": Completed" );
-				this.update_status( fn+": Completed" );
+				console.log( fn+": Login Completed" );
+				this.update_status( fn+": Login Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
-				this.update_status( fn+": Failed! "+err.message );
+				console.log( fn+": Login Failed! -- ", err.message );
+				this.update_status( fn+": Login Failed! -- "+err.message );
 			} );
 			console.log( fn+": In Progress..." );
 		} );
@@ -249,4 +258,3 @@ PAWS_OIDC_bridge.logout_handler = function() {
 	};
 
 PAWS_OIDC_bridge.main();
-PAWS_OIDC_bridge.login();

@@ -39,6 +39,11 @@ PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				console.log( fn+": environment loaded" );
+        // return location.protocol + "//" + location.host;
+				this.ENV.loginSettings.origin = location.protocol + "//" + location.host;
+        // var idx = url.indexOf("/", url.indexOf("//") + 2);
+        // this._frame_origin = url.substr(0, idx);
+				console.log( fn+": origin = ", this.ENV.loginSettings.origin );
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
 				mgr.events.addUserLoaded( (user) => { 
 					this.user = user;
@@ -64,7 +69,7 @@ PAWS_OIDC_bridge.initialize = function() {
 				this.update_status( fn+": UserManager is ready." );
 				this.mgr = mgr;
 				// console.log( fn+": AUTOLOGIN = ", this.AUTOLOGIN );
-				if( false != this.AUTOLOGIN ) {
+				if( false !== this.AUTOLOGIN ) {
 					console.log( fn+": Attempting automatic login" );
 					this.update_status( fn+": Attempting automatic login" );
 					this.login();

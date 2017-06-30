@@ -38,7 +38,7 @@ PAWS_OIDC_bridge.main = function() {
 PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
-				console.log( fn+": environment loaded" );
+				console.log( fn+": library & environment loaded" );
         // return location.protocol + "//" + location.host;
 				// this.ENV.loginSettings.origin = location.protocol + "//" + location.host;
         // var idx = url.indexOf("/", url.indexOf("//") + 2);
@@ -154,7 +154,7 @@ PAWS_OIDC_bridge.popup_login = function() {
 	};
 PAWS_OIDC_bridge.loadscripts = function(urls,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscripts";
-		console.log( fn+" invoked" );
+		console.log( fn+" invoked: ", urls.join(", ") );
 		let count = urls.length;
 		for( url of urls ) {
 			this.loadscript( url, () => {
@@ -165,7 +165,7 @@ PAWS_OIDC_bridge.loadscripts = function(urls,callback) {
 	};
 PAWS_OIDC_bridge.loadscript = function(url,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscript";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		let tag = document.createElement("script");
 		tag.setAttribute("src",url+"?"+(new Date()).toISOString())
 		tag.onload = function() {

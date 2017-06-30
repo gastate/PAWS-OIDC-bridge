@@ -3,7 +3,7 @@
 		<title>PAWS-OIDC-bridge Test Page</title>
 		<!--<script src="oidc-client.js"></script>-->
 		<!--<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; } PAWS_OIDC_bridge.AUTOLOGIN = false</script>-->
-		<script src="PAWS-OIDC-bridge.js"></script>
+		<!--<script src="PAWS-OIDC-bridge.js"></script>-->
 	</head>
 	<body>
 		<h1>PAWS-OIDC-bridge Test Page</h1>
@@ -23,6 +23,32 @@
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
 		<!--<script>PAWS_OIDC_bridge.login()</script>-->
-		<script>PAWS_OIDC_bridge.await_prop( "ENV", () => { PAWS_OIDC_bridge.ENV.origin = location.protocol + "//" + location.host } );</script>
+		<!--<script>PAWS_OIDC_bridge.await_prop( "ENV", () => { PAWS_OIDC_bridge.ENV.origin = location.protocol + "//" + location.host } );</script>-->
+		<script>
+			let next = window;
+			let depth = 0;
+			while( next.parent !== next ) {
+				next = next.parent;
+				depth += 1;
+			}
+			let fn = depth+">index";
+			loadscript = function(url,callback) {
+				let fn = depth+">index/loadscript";
+				console.log( fn+": loading ", url );
+				let tag = document.createElement("script");
+				tag.setAttribute("src",url+"?"+(new Date()).toISOString())
+				tag.onload = function() {
+					console.log( fn+": loaded", url );
+					document.head.removeChild(tag);
+					if(callback) { callback(); }
+				};
+				document.head.appendChild(tag);
+			};
+			loadscript( "PAWS-OIDC-bridge-env.js", () => {
+				PAWS_OIDC_bridge.ENV.origin = location.protocol + "//" + location.host;
+				console.log( fn+": origin = ", PAWS_OIDC_bridge.ENV.origin );
+				loadscript( "PAWS-OIDC-bridge.js" );
+			} );
+		</script>
 	</body>
 </html>

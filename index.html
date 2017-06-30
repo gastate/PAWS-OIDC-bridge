@@ -23,5 +23,6 @@
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
 		<!--<script>PAWS_OIDC_bridge.login()</script>-->
+		<script>PAWS_OIDC_bridge.await_prop( "ENV", () => { PAWS_OIDC_bridge.ENV.origin = location.protocol + "//" + location.host } );</script>
 	</body>
 </html>

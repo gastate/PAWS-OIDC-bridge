@@ -228,7 +228,7 @@ PAWS_OIDC_bridge.callback_silent = function() {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
+				console.error( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 			} );
 			console.log( fn+": In Progress..." );

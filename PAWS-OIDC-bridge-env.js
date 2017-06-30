@@ -15,7 +15,8 @@ PAWS_OIDC_bridge.ENV = {
 		monitorSession: true,
 		filterProtocolClaims: false,
 		loadUserInfo: true,
-		revokeAccessTokenOnSignout: true
+		revokeAccessTokenOnSignout: true,
+		origin: "http://localhost:8080",
 	},
 	uri_logout: "http://localhost:8080/logout_helper.html",
 	status_elm: "PAWS-OIDC-bridge-status",

@@ -15,7 +15,8 @@ PAWS_OIDC_bridge.ENV = {
 		monitorSession: true,
 		filterProtocolClaims: false,
 		loadUserInfo: true,
-		revokeAccessTokenOnSignout: true
+		revokeAccessTokenOnSignout: true,
+		origin: "https://pawsportal.gsu.edu"
 	},
 	uri_logout: "https://cdn.gsu.edu/PAWS-OIDC-bridge/logout_helper.html",
 	iframe_style: { 

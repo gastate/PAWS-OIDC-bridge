@@ -40,7 +40,7 @@ PAWS_OIDC_bridge.initialize = function() {
 			this.await_prop( "ENV", () => {
 				console.log( fn+": environment loaded" );
         // return location.protocol + "//" + location.host;
-				this.ENV.loginSettings.origin = location.protocol + "//" + location.host;
+				// this.ENV.loginSettings.origin = location.protocol + "//" + location.host;
         // var idx = url.indexOf("/", url.indexOf("//") + 2);
         // this._frame_origin = url.substr(0, idx);
 				console.log( fn+": origin = ", this.ENV.loginSettings.origin );

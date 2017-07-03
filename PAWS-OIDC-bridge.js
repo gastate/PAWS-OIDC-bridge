@@ -39,11 +39,11 @@ PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				console.log( fn+": library & environment loaded" );
-        // return location.protocol + "//" + location.host;
-				// this.ENV.loginSettings.origin = location.protocol + "//" + location.host;
-        // var idx = url.indexOf("/", url.indexOf("//") + 2);
-        // this._frame_origin = url.substr(0, idx);
 				console.log( fn+": origin = ", this.ENV.loginSettings.origin );
+				if( this.CLEARORIGIN ) {
+					delete this.ENV.loginSettings.origin;
+					console.warn( fn+": origin cleared" );
+				}
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
 				mgr.events.addUserLoaded( (user) => { 
 					this.user = user;

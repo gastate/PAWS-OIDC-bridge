@@ -1,9 +1,8 @@
 <html>
 	<head>
 		<title>PAWS-OIDC-bridge Test Page</title>
-		<!--<script src="oidc-client.js"></script>-->
-		<!--<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; } PAWS_OIDC_bridge.AUTOLOGIN = false</script>-->
-		<!--<script src="PAWS-OIDC-bridge.js"></script>-->
+		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; } PAWS_OIDC_bridge.CLEARORIGIN = true;</script>
+		<script src="PAWS-OIDC-bridge.js"></script>
 	</head>
 	<body>
 		<h1>PAWS-OIDC-bridge Test Page</h1>
@@ -22,9 +21,7 @@
 			<br/>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
-		<!--<script>PAWS_OIDC_bridge.login()</script>-->
-		<!--<script>PAWS_OIDC_bridge.await_prop( "ENV", () => { PAWS_OIDC_bridge.ENV.origin = location.protocol + "//" + location.host } );</script>-->
-		<script>
+		<!--<script>
 			let next = window;
 			let depth = 0;
 			while( next.parent !== next ) {
@@ -86,6 +83,6 @@
 					}
 				);
 			} );
-		</script>
+		</script>-->
 	</body>
 </html>

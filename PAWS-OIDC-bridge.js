@@ -41,9 +41,14 @@ PAWS_OIDC_bridge.initialize = function() {
 				console.log( fn+": library & environment loaded" );
 				console.log( fn+": pageOrigin = ", this.ENV.loginSettings.pageOrigin );
 				console.log( fn+": scriptOrigin = ", this.ENV.loginSettings.scriptOrigin );
-				if( this.CLEARORIGINS ) {
+				if( this.CLEARORIGINS || window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) > 0 ) {
 					delete this.ENV.loginSettings.pageOrigin;
 					delete this.ENV.loginSettings.scriptOrigin;
+					PAWS_OIDC_bridge.ENV.loginSettings.redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.loginSettings.silent_redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.loginSettings.popup_redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.uri_logout += "?clearorigins";
 					console.warn( fn+": origins cleared" );
 				}
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );

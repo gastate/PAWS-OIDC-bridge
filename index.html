@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>PAWS-OIDC-bridge Test Page</title>
-		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; } PAWS_OIDC_bridge.CLEARORIGINS = true;</script>
+		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }; PAWS_OIDC_bridge.CLEARORIGINS = true;</script>
 		<script src="PAWS-OIDC-bridge.js"></script>
 	</head>
 	<body>
@@ -21,68 +21,5 @@
 			<br/>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
-		<!--<script>
-			let next = window;
-			let depth = 0;
-			while( next.parent !== next ) {
-				next = next.parent;
-				depth += 1;
-			}
-			let fn = depth+">index";
-			loadscript = function(url,callback) {
-				let fn = depth+">index/loadscript";
-				console.log( fn+": loading ", url );
-				let tag = document.createElement("script");
-				tag.setAttribute("src",url+"?"+(new Date()).toISOString())
-				tag.onload = function() {
-					console.log( fn+": loaded", url );
-					document.head.removeChild(tag);
-					if(callback) { callback(); }
-				};
-				document.head.appendChild(tag);
-			};
-			await = function( desc, test, callback, delay=0 ) {
-				let fn = depth+">index/await";
-				let step = 100;
-				try {
-					result = test();
-					if( ! result ) {
-						console.log( fn+": ", desc, delay, " falsey result -- ", result );
-						delay += step;
-						setTimeout( () => await(desc,test,callback,delay), step );
-					} else {
-						console.log( fn+": ", desc, delay, " truthy result -- ", result );
-						callback();
-					}
-				} catch(e) {
-					console.log( fn+": ", desc, delay, " error result -- ", result );
-					delay += step;
-					setTimeout( () => await(desc,test,callback,delay), step );
-				}
-			}
-			loadscript( "PAWS-OIDC-bridge-env.js", () => {
-				await(
-					"origin",
-					() => { return typeof PAWS_OIDC_bridge.ENV.loginSettings.origin !== "undefined" },
-					() => { 
-						console.log( fn+": origin = ", PAWS_OIDC_bridge.ENV.loginSettings.origin );
-						let realOrigin = location.protocol + "//" + location.host;
-						if( realOrigin != PAWS_OIDC_bridge.ENV.loginSettings.origin ) {
-							console.warn( fn+": Overriding Origin" );
-							PAWS_OIDC_bridge.ENV.loginSettings.origin = realOrigin;
-							PAWS_OIDC_bridge.ENV.loginSettings.redirect_uri += "?origin="+realOrigin;
-							PAWS_OIDC_bridge.ENV.loginSettings.silent_redirect_uri += "?origin="+realOrigin;
-							PAWS_OIDC_bridge.ENV.loginSettings.popup_redirect_uri += "?origin="+realOrigin;
-							PAWS_OIDC_bridge.ENV.loginSettings.post_logout_redirect_uri += "?origin="+realOrigin;
-							console.log( fn+": origin = ", PAWS_OIDC_bridge.ENV.loginSettings.origin );
-							console.log( fn+": settings = ", PAWS_OIDC_bridge.ENV.loginSettings );
-						} else {
-							console.warn( fn+": Keeping Default Origin" );
-						}
-						loadscript( "PAWS-OIDC-bridge.js" );
-					}
-				);
-			} );
-		</script>-->
 	</body>
 </html>

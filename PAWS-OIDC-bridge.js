@@ -46,7 +46,7 @@ PAWS_OIDC_bridge.initialize = function() {
 				console.log( fn+": substr = ", window.location.href.substr( window.location.href.indexOf("?")+1 ) );
 				console.log( fn+": clearorigins @ ", window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) );
 				console.log( fn+": clear query = ", window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) > 0 );
-				if( this.CLEARORIGINS || window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) > 0 ) {
+				if( this.CLEARORIGINS || window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
 					delete this.ENV.loginSettings.pageOrigin;
 					delete this.ENV.loginSettings.scriptOrigin;
 					PAWS_OIDC_bridge.ENV.loginSettings.redirect_uri += "?clearorigins";

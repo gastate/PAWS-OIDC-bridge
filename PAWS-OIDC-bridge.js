@@ -112,6 +112,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 			listener = (event) => {
 				console.log( fn+"/Event: ", event );
 				console.log( fn+"/Event: ", JSON.stringify(event) );
+				console.log( fn+"/Event: data = ", event.data );
 				if( event.source === tag.contentWindow ) {
 					console.log( fn+"/Event: Processing Event from iframe" );
 					clearTimeout(timeout);

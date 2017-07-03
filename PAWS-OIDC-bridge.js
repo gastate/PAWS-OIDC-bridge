@@ -39,10 +39,12 @@ PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				console.log( fn+": library & environment loaded" );
-				console.log( fn+": origin = ", this.ENV.loginSettings.origin );
-				if( this.CLEARORIGIN ) {
-					delete this.ENV.loginSettings.origin;
-					console.warn( fn+": origin cleared" );
+				console.log( fn+": pageOrigin = ", this.ENV.loginSettings.pageOrigin );
+				console.log( fn+": scriptOrigin = ", this.ENV.loginSettings.scriptOrigin );
+				if( this.CLEARORIGINS ) {
+					delete this.ENV.loginSettings.pageOrigin;
+					delete this.ENV.loginSettings.scriptOrigin;
+					console.warn( fn+": origins cleared" );
 				}
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
 				mgr.events.addUserLoaded( (user) => { 

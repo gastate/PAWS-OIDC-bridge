@@ -1,5 +1,6 @@
 if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }
 PAWS_OIDC_bridge.ENV = {
+	name: "PROD",
 	await_interval: 400,
 	loginSettings: {
 		authority: "https://idp.gsu.edu/",
@@ -16,7 +17,8 @@ PAWS_OIDC_bridge.ENV = {
 		filterProtocolClaims: false,
 		loadUserInfo: true,
 		revokeAccessTokenOnSignout: true,
-		origin: "https://pawsportal.gsu.edu"
+		pageOrigin: "https://pawsportal.gsu.edu",
+		scriptOrigin: document.currentScript.src.substr(0, document.currentScript.src.indexOf("/", document.currentScript.src.indexOf("//") + 2)),
 	},
 	uri_logout: "https://cdn.gsu.edu/PAWS-OIDC-bridge/logout_helper.html",
 	iframe_style: { 

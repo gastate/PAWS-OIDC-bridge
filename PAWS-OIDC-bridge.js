@@ -36,9 +36,21 @@ PAWS_OIDC_bridge.main = function() {
 		}
 	};
 PAWS_OIDC_bridge.initialize = function() {
-		let fn = "PAWS_OIDC_bridge.initialize";
+		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
-				console.log( fn+": environment loaded" );
+				console.log( fn+": library & environment loaded" );
+				console.log( fn+": pageOrigin = ", this.ENV.loginSettings.pageOrigin );
+				console.log( fn+": scriptOrigin = ", this.ENV.loginSettings.scriptOrigin );
+				if( this.CLEARORIGINS || window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
+					delete this.ENV.loginSettings.pageOrigin;
+					delete this.ENV.loginSettings.scriptOrigin;
+					PAWS_OIDC_bridge.ENV.loginSettings.redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.loginSettings.silent_redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.loginSettings.popup_redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
+					PAWS_OIDC_bridge.ENV.uri_logout += "?clearorigins";
+					console.warn( fn+": origins cleared" );
+				}
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
 				mgr.events.addUserLoaded( (user) => { 
 					this.user = user;
@@ -63,6 +75,15 @@ PAWS_OIDC_bridge.initialize = function() {
 				console.log( fn+": UserManager is ready." );
 				this.update_status( fn+": UserManager is ready." );
 				this.mgr = mgr;
+				// console.log( fn+": AUTOLOGIN = ", this.AUTOLOGIN );
+				if( false !== this.AUTOLOGIN ) {
+					console.log( fn+": Attempting automatic login" );
+					this.update_status( fn+": Attempting automatic login" );
+					this.login();
+				} else {
+					console.log( fn+": Automatic login disabled" );
+					this.update_status( fn+": Automatic login disabled" );
+				}
 			} );
 		}
 PAWS_OIDC_bridge.login = function() {
@@ -70,11 +91,11 @@ PAWS_OIDC_bridge.login = function() {
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			this.mgr.signinSilent().then( () => {
-				console.log( fn+": Completed" );
-				this.update_status( fn+": Completed" );
+				console.log( fn+": Login Completed" );
+				this.update_status( fn+": Login Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
-				this.update_status( fn+": Failed! "+err.message );
+				console.log( fn+": Login Failed! -- ", err.message );
+				this.update_status( fn+": Login Failed! -- "+err.message );
 			} );
 			console.log( fn+": In Progress..." );
 		} );
@@ -90,6 +111,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 			let timeout, listener;
 			listener = (event) => {
 				console.log( fn+"/Event: ", event );
+				console.log( fn+"/Event: ", JSON.stringify(event) );
 				if( event.source === tag.contentWindow ) {
 					console.log( fn+"/Event: Processing Event from iframe" );
 					clearTimeout(timeout);
@@ -106,6 +128,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 						console.log( fn+"/Event: Logout succeded" );
 						this.update_status( fn+"/Event: Logout succeded" );
 					}
+					console.log( fn+"/Event: Invoking callback with ", data );
 					if( callback ) { callback( data ); }
 				} else {
 					console.log( fn+"/Event: Ignoring Event NOT from iframe" );
@@ -140,7 +163,7 @@ PAWS_OIDC_bridge.popup_login = function() {
 	};
 PAWS_OIDC_bridge.loadscripts = function(urls,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscripts";
-		console.log( fn+" invoked" );
+		console.log( fn+" invoked: ", urls.join(", ") );
 		let count = urls.length;
 		for( url of urls ) {
 			this.loadscript( url, () => {
@@ -151,7 +174,7 @@ PAWS_OIDC_bridge.loadscripts = function(urls,callback) {
 	};
 PAWS_OIDC_bridge.loadscript = function(url,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscript";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		let tag = document.createElement("script");
 		tag.setAttribute("src",url+"?"+(new Date()).toISOString())
 		tag.onload = function() {
@@ -214,7 +237,7 @@ PAWS_OIDC_bridge.callback_silent = function() {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
+				console.error( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 			} );
 			console.log( fn+": In Progress..." );
@@ -249,4 +272,3 @@ PAWS_OIDC_bridge.logout_handler = function() {
 	};
 
 PAWS_OIDC_bridge.main();
-PAWS_OIDC_bridge.login();

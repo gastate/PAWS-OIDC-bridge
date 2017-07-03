@@ -1,5 +1,6 @@
 if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }
 PAWS_OIDC_bridge.ENV = {
+	name: "LOCAL",
 	await_interval: 101,
 	loginSettings: {
 		authority: "https://idp-d.gsu.edu/",
@@ -11,11 +12,13 @@ PAWS_OIDC_bridge.ENV = {
 		response_type: 'id_token token',
 		scope: "openid profile gsupersonpantherid",
 		automaticSilentRenew: true,
-		silentRequestTimeout: 6000, //ms
+		silentRequestTimeout: 11000, //ms
 		monitorSession: true,
 		filterProtocolClaims: false,
 		loadUserInfo: true,
-		revokeAccessTokenOnSignout: true
+		revokeAccessTokenOnSignout: true,
+		pageOrigin: "http://localhost:8080",
+		scriptOrigin: document.currentScript.src.substr(0, document.currentScript.src.indexOf("/", document.currentScript.src.indexOf("//") + 2)),
 	},
 	uri_logout: "http://localhost:8080/logout_helper.html",
 	status_elm: "PAWS-OIDC-bridge-status",

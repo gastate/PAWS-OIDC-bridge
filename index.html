@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>PAWS-OIDC-bridge Test Page</title>
-		<!--<script src="oidc-client.js"></script>-->
+		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }; PAWS_OIDC_bridge.CLEARORIGINS = true;</script>
 		<script src="PAWS-OIDC-bridge.js"></script>
 	</head>
 	<body>
@@ -21,6 +21,5 @@
 			<br/>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
-		<!--<script>PAWS_OIDC_bridge.login()</script>-->
 	</body>
 </html>

@@ -44,10 +44,36 @@
 				};
 				document.head.appendChild(tag);
 			};
+			await = function( desc, test, callback, delay=0 ) {
+				let fn = depth+">index/await";
+				let step = 100;
+				try {
+					result = test();
+					if( ! result ) {
+						console.log( fn+": ", desc, delay, " falsey result -- ", result );
+						delay += step;
+						setTimeout( () => await(desc,test,callback,delay), step );
+					} else {
+						console.log( fn+": ", desc, delay, " truthy result -- ", result );
+						callback();
+					}
+				} catch(e) {
+					console.log( fn+": ", desc, delay, " error result -- ", result );
+					delay += step;
+					setTimeout( () => await(desc,test,callback,delay), step );
+				}
+			}
 			loadscript( "PAWS-OIDC-bridge-env.js", () => {
-				PAWS_OIDC_bridge.ENV.origin = location.protocol + "//" + location.host;
-				console.log( fn+": origin = ", PAWS_OIDC_bridge.ENV.origin );
-				loadscript( "PAWS-OIDC-bridge.js" );
+				await(
+					"origin",
+					() => { return typeof PAWS_OIDC_bridge.ENV.loginSettings.origin !== "undefined" },
+					() => { 
+						console.log( fn+": origin = ", PAWS_OIDC_bridge.ENV.loginSettings.origin );
+						PAWS_OIDC_bridge.ENV.loginSettings.origin = location.protocol + "//" + location.host;
+						console.log( fn+": origin = ", PAWS_OIDC_bridge.ENV.loginSettings.origin );
+						loadscript( "PAWS-OIDC-bridge.js" );
+					}
+				);
 			} );
 		</script>
 	</body>

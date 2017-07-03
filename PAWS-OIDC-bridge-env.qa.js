@@ -4,7 +4,7 @@ PAWS_OIDC_bridge.ENV = {
 	await_interval: 400,
 	loginSettings: {
 		authority: "https://idp-qa.gsu.edu/",
-		client_id: "",
+		client_id: "@!0820.7AAD.866E.4E4C!0001!A644.9660!0008!25B4.3F2E",
 		redirect_uri: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/redirect.html",
 		silent_redirect_uri: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/silent.html",
 		popup_redirect_uri: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/popup.html",

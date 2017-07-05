@@ -58,6 +58,7 @@ PAWS_OIDC_bridge.initialize = function() {
 					this.update_status( "Loaded User: "+JSON.stringify(this.user.profile) );
 				} );
 				mgr.events.addUserUnloaded( (...args) => { 
+					console.log( fn+"/UserUnloaded: ", JSON.stringify(args) );
 					console.log( fn+"/UserUnloaded: ", args );
 				} );
 				mgr.events.addAccessTokenExpiring( (...args) => { 
@@ -79,23 +80,36 @@ PAWS_OIDC_bridge.initialize = function() {
 				if( false !== this.AUTOLOGIN ) {
 					console.log( fn+": Attempting automatic login" );
 					this.update_status( fn+": Attempting automatic login" );
-					this.login();
+					this.login_loop();
 				} else {
 					console.log( fn+": Automatic login disabled" );
 					this.update_status( fn+": Automatic login disabled" );
 				}
 			} );
 		}
-PAWS_OIDC_bridge.login = function() {
+PAWS_OIDC_bridge.login_loop = function() {
+	let fn = this.depth+">PAWS_OIDC_bridge.login_loop";
+	console.log( fn+" invoked" );
+	this.login( ( info ) => {
+		if( info.failure ) {
+			let wait = 1000;
+			console.warn( fn+": Waiting "+wait+"ms to retry")
+			setTimeout( () => { this.login_loop(); }, wait );
+		}
+	} );
+}
+PAWS_OIDC_bridge.login = function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.login";
 		console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			this.mgr.signinSilent().then( () => {
 				console.log( fn+": Login Completed" );
 				this.update_status( fn+": Login Completed" );
+				if( callback ) { callback({}); }
 			} ).catch( (err) => {
 				console.log( fn+": Login Failed! -- ", err.message );
 				this.update_status( fn+": Login Failed! -- "+err.message );
+				if( callback ) { callback( { failure:true, error:err, message:err.message } ); }
 			} );
 			console.log( fn+": In Progress..." );
 		} );
@@ -143,7 +157,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 				let message = "Logout request timed out after "+this.ENV.loginSettings.silentRequestTimeout/1000+" seconds";
 				console.error( fn+"/Event: Logout failed -- ", message );
 				this.update_status( fn+"/Event: Logout failed -- " + message );
-				if( callback ) { callback( { failure:true, error:new Error(message) } ); }
+				if( callback ) { callback( { failure:true, error:new Error(message), message:message } ); }
 			}, this.ENV.loginSettings.silentRequestTimeout );
 			document.body.appendChild(tag);
 		} );
@@ -217,7 +231,7 @@ PAWS_OIDC_bridge.await_prop = function( prop, callback, delay=0 ) {
 PAWS_OIDC_bridge.helper_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.helper_logout";
 		console.log( fn+" invoked" );
-		this.await_prop( "mgr", () => {
+		this.await_prop( "user", () => {
 			this.mgr.signoutRedirect().then( () => {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );

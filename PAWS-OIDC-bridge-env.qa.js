@@ -10,7 +10,7 @@ PAWS_OIDC_bridge.ENV = {
 		popup_redirect_uri: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/popup.html",
 		post_logout_redirect_uri: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/logout.html",
 		response_type: 'id_token token',
-		scope: "openid profile gsupersonpantherid",
+		scope: "openid profile gsupersonpantherid user_name email",
 		automaticSilentRenew: true,
 		silentRequestTimeout: 11000, //ms
 		monitorSession: true,

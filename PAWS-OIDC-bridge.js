@@ -128,7 +128,7 @@ PAWS_OIDC_bridge.login = function( callback ) {
 PAWS_OIDC_bridge.logout = function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout";
 		console.log( fn+" invoked" );
-		this.await_prop( "ENV", () => {
+		this.await_prop( "mgr", () => {
 			let tag = document.createElement("iframe");
 			if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
 			tag.setAttribute( "src", this.ENV.uri_logout+"?"+(new Date()).toISOString() );
@@ -273,7 +273,7 @@ PAWS_OIDC_bridge.callback_silent = function() {
 PAWS_OIDC_bridge.callback_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_logout";
 		console.log( fn+" invoked" );
-		this.await_prop( "ENV", () => {
+		this.await_prop( "mgr", () => {
 			console.log( fn+": href = ", this.initial_href );
 			let message = JSON.stringify( { failure: false, href: this.initial_href } );
 			console.log( fn+": postMessage with message =", message );

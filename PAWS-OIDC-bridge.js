@@ -44,20 +44,20 @@ PAWS_OIDC_bridge.initialize = function() {
 				if( window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
 					this.CLEARORIGINS = true;
 				}
-				if( this.CLEARORIGINS ) {
-					delete this.ENV.loginSettings.pageOrigin;
-					delete this.ENV.loginSettings.scriptOrigin;
+				if( this.CLEARORIGINS || this.SPLITORIGINS ) {
+					this.ENV.loginSettings.pageOrigin = this.ENV.scriptOrigin;
+					this.ENV.loginSettings.scriptOrigin = this.ENV.scriptOrigin;
 					this.ENV.loginSettings.redirect_uri += "?clearorigins";
 					this.ENV.loginSettings.silent_redirect_uri += "?clearorigins";
 					this.ENV.loginSettings.popup_redirect_uri += "?clearorigins";
 					this.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
 					this.ENV.uri_logout += "?clearorigins";
-					this.ENV.pageOrigin = this.ENV.scriptOrigin;
-					console.warn( fn+": origins cleared" );
-				} else if( this.SPLITORIGINS ) {
-					this.ENV.loginSettings.pageOrigin = this.ENV.scriptOrigin;
-					this.ENV.loginSettings.scriptOrigin = this.ENV.scriptOrigin;
-					console.warn( fn+": origins SPLIT" );
+					if( this.CLEARORIGINS ) {
+						this.ENV.pageOrigin = this.ENV.scriptOrigin;
+						console.warn( fn+": origins cleared" );
+					} else {
+						console.warn( fn+": origins SPLIT" );
+					}
 				} else {
 					this.ENV.loginSettings.pageOrigin = this.ENV.pageOrigin;
 					this.ENV.loginSettings.scriptOrigin = this.ENV.scriptOrigin;
@@ -169,7 +169,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 				console.error( fn+"/Event: Logout failed -- ", message );
 				this.update_status( fn+"/Event: Logout failed -- " + message );
 				if( callback ) { callback( { failure:true, error:new Error(message), message:message } ); }
-			}, this.ENV.loginSettings.silentRequestTimeout );
+			}, 2*this.ENV.loginSettings.silentRequestTimeout ); // double because two requests are made of auth server
 			document.body.appendChild(tag);
 		} );
 	};
@@ -250,6 +250,7 @@ PAWS_OIDC_bridge.helper_logout = function() {
 				console.log( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 				let message = JSON.stringify( { failure: true, href: this.initial_href, error: err } );
+				console.log( fn+": Failure postMessage to origin ", this.ENV.pageOrigin );
 				parent.postMessage( message, this.ENV.pageOrigin );
 			} );
 			console.log( fn+": In Progress..." );
@@ -275,7 +276,8 @@ PAWS_OIDC_bridge.callback_logout = function() {
 		this.await_prop( "ENV", () => {
 			console.log( fn+": href = ", this.initial_href );
 			let message = JSON.stringify( { failure: false, href: this.initial_href } );
-			console.log( fn+": message =", message );
+			console.log( fn+": postMessage with message =", message );
+			console.log( fn+": postMessage with origin =", this.ENV.pageOrigin );
 			parent.postMessage( message, this.ENV.pageOrigin );
 		} );
 	};
@@ -314,6 +316,7 @@ PAWS_OIDC_bridge.main();
  * Logout Callback: 
  * 	from App: normal
  * 	from Test: scriptOrigin replaces pageOrigin
+ *  from Helper: scriptOrigin replaces pageOrigin
  * Logout Handler: doesn't use either
  * Popup Callback (from Test only): scriptOrigin replaces pageOrigin
  * 

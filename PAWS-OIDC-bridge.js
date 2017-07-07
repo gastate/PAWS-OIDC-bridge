@@ -272,10 +272,12 @@ PAWS_OIDC_bridge.callback_silent = function() {
 PAWS_OIDC_bridge.callback_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_logout";
 		console.log( fn+" invoked" );
-		console.log( fn+": href = ", this.initial_href );
-		let message = JSON.stringify( { failure: false, href: this.initial_href } );
-		console.log( fn+": message =", message );
-		parent.postMessage( message, this.ENV.pageOrigin );
+		this.await_prop( "ENV", () => {
+			console.log( fn+": href = ", this.initial_href );
+			let message = JSON.stringify( { failure: false, href: this.initial_href } );
+			console.log( fn+": message =", message );
+			parent.postMessage( message, this.ENV.pageOrigin );
+		} );
 	};
 PAWS_OIDC_bridge.callback_popup = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_popup";

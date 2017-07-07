@@ -47,13 +47,13 @@ PAWS_OIDC_bridge.initialize = function() {
 				if( this.CLEARORIGINS || this.SPLITORIGINS ) {
 					this.ENV.loginSettings.pageOrigin = this.ENV.scriptOrigin;
 					this.ENV.loginSettings.scriptOrigin = this.ENV.scriptOrigin;
-					this.ENV.loginSettings.redirect_uri += "?clearorigins";
 					this.ENV.loginSettings.silent_redirect_uri += "?clearorigins";
 					this.ENV.loginSettings.popup_redirect_uri += "?clearorigins";
-					this.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
 					this.ENV.uri_logout += "?clearorigins";
 					if( this.CLEARORIGINS ) {
 						this.ENV.pageOrigin = this.ENV.scriptOrigin;
+						this.ENV.loginSettings.redirect_uri += "?clearorigins";
+						this.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
 						console.warn( fn+": origins cleared" );
 					} else {
 						console.warn( fn+": origins SPLIT" );

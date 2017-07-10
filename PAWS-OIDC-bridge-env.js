@@ -1,7 +1,8 @@
 if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }
 PAWS_OIDC_bridge.ENV = {
 	name: "LOCAL",
-	await_interval: 101,
+	pageOrigin: "http://localhost:8080",
+	scriptOrigin: document.currentScript.src.substr(0, document.currentScript.src.indexOf("/", document.currentScript.src.indexOf("//") + 2)),
 	loginSettings: {
 		authority: "https://idp-d.gsu.edu/",
 		client_id: "@!DE0A.9C27.805E.9101!0001!2E8F.F37E!0008!48AF.805B",
@@ -17,13 +18,13 @@ PAWS_OIDC_bridge.ENV = {
 		filterProtocolClaims: false,
 		loadUserInfo: true,
 		revokeAccessTokenOnSignout: true,
-		pageOrigin: "http://localhost:8080",
-		scriptOrigin: document.currentScript.src.substr(0, document.currentScript.src.indexOf("/", document.currentScript.src.indexOf("//") + 2)),
 	},
 	uri_logout: "http://localhost:8080/logout_helper.html",
-	status_elm: "PAWS-OIDC-bridge-status",
-	iframe_style: { 
+	await_interval: 101, //ms
+	login_loop_wait: 2500, //ms
+	iframe_style: {
 		width: "100%",
 		height: "20em",
 	},
+	status_elm: "PAWS-OIDC-bridge-status",
 }

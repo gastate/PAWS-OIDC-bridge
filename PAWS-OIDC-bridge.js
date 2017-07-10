@@ -39,17 +39,29 @@ PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				console.log( fn+": library & environment loaded" );
-				console.log( fn+": pageOrigin = ", this.ENV.loginSettings.pageOrigin );
-				console.log( fn+": scriptOrigin = ", this.ENV.loginSettings.scriptOrigin );
-				if( this.CLEARORIGINS || window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
-					delete this.ENV.loginSettings.pageOrigin;
-					delete this.ENV.loginSettings.scriptOrigin;
-					PAWS_OIDC_bridge.ENV.loginSettings.redirect_uri += "?clearorigins";
-					PAWS_OIDC_bridge.ENV.loginSettings.silent_redirect_uri += "?clearorigins";
-					PAWS_OIDC_bridge.ENV.loginSettings.popup_redirect_uri += "?clearorigins";
-					PAWS_OIDC_bridge.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
-					PAWS_OIDC_bridge.ENV.uri_logout += "?clearorigins";
-					console.warn( fn+": origins cleared" );
+				console.log( fn+": pageOrigin = ", this.ENV.pageOrigin );
+				console.log( fn+": scriptOrigin = ", this.ENV.scriptOrigin );
+				if( window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
+					this.CLEARORIGINS = true;
+				}
+				if( this.CLEARORIGINS || this.SPLITORIGINS ) {
+					this.ENV.loginSettings.pageOrigin = this.ENV.scriptOrigin;
+					this.ENV.loginSettings.scriptOrigin = this.ENV.scriptOrigin;
+					this.ENV.loginSettings.silent_redirect_uri += "?clearorigins";
+					this.ENV.loginSettings.popup_redirect_uri += "?clearorigins";
+					this.ENV.uri_logout += "?clearorigins";
+					if( this.CLEARORIGINS ) {
+						this.ENV.pageOrigin = this.ENV.scriptOrigin;
+						this.ENV.loginSettings.redirect_uri += "?clearorigins";
+						this.ENV.loginSettings.post_logout_redirect_uri += "?clearorigins";
+						console.warn( fn+": origins cleared" );
+					} else {
+						console.warn( fn+": origins SPLIT" );
+					}
+				} else {
+					this.ENV.loginSettings.pageOrigin = this.ENV.pageOrigin;
+					this.ENV.loginSettings.scriptOrigin = this.ENV.scriptOrigin;
+					console.warn( fn+": origins applied" );
 				}
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
 				mgr.events.addUserLoaded( (user) => { 
@@ -92,9 +104,8 @@ PAWS_OIDC_bridge.login_loop = function() {
 	console.log( fn+" invoked" );
 	this.login( ( info ) => {
 		if( info.failure ) {
-			let wait = 1000;
-			console.warn( fn+": Waiting "+wait+"ms to retry")
-			setTimeout( () => { this.login_loop(); }, wait );
+			console.warn( fn+": Waiting "+this.ENV.login_loop_wait+"ms to retry")
+			setTimeout( () => { this.login_loop(); }, this.ENV.login_loop_wait );
 		}
 	} );
 }
@@ -117,7 +128,7 @@ PAWS_OIDC_bridge.login = function( callback ) {
 PAWS_OIDC_bridge.logout = function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout";
 		console.log( fn+" invoked" );
-		this.await_prop( "ENV", () => {
+		this.await_prop( "mgr", () => {
 			let tag = document.createElement("iframe");
 			if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
 			tag.setAttribute( "src", this.ENV.uri_logout+"?"+(new Date()).toISOString() );
@@ -158,7 +169,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 				console.error( fn+"/Event: Logout failed -- ", message );
 				this.update_status( fn+"/Event: Logout failed -- " + message );
 				if( callback ) { callback( { failure:true, error:new Error(message), message:message } ); }
-			}, this.ENV.loginSettings.silentRequestTimeout );
+			}, 2*this.ENV.loginSettings.silentRequestTimeout ); // double because two requests are made of auth server
 			document.body.appendChild(tag);
 		} );
 	};
@@ -239,7 +250,8 @@ PAWS_OIDC_bridge.helper_logout = function() {
 				console.log( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 				let message = JSON.stringify( { failure: true, href: this.initial_href, error: err } );
-				parent.postMessage( message, "*" );
+				console.log( fn+": Failure postMessage to origin ", this.ENV.pageOrigin );
+				parent.postMessage( message, this.ENV.pageOrigin );
 			} );
 			console.log( fn+": In Progress..." );
 		} );
@@ -261,10 +273,13 @@ PAWS_OIDC_bridge.callback_silent = function() {
 PAWS_OIDC_bridge.callback_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_logout";
 		console.log( fn+" invoked" );
-		console.log( fn+": href = ", this.initial_href );
-		let message = JSON.stringify( { failure: false, href: this.initial_href } );
-		console.log( fn+": message =", message );
-		parent.postMessage( message, "*" );
+		this.await_prop( "mgr", () => {
+			console.log( fn+": href = ", this.initial_href );
+			let message = JSON.stringify( { failure: false, href: this.initial_href } );
+			console.log( fn+": postMessage with message =", message );
+			console.log( fn+": postMessage with origin =", this.ENV.pageOrigin );
+			parent.postMessage( message, this.ENV.pageOrigin );
+		} );
 	};
 PAWS_OIDC_bridge.callback_popup = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_popup";
@@ -287,3 +302,22 @@ PAWS_OIDC_bridge.logout_handler = function() {
 	};
 
 PAWS_OIDC_bridge.main();
+
+/*
+ * App Page: normal
+ * Test Page: scriptOrigin replaces pageOrigin
+ * Silent Callback:
+ * 	from App: normal
+ * 	from Test: scriptOrigin replaces pageOrigin
+ * 	from Helper: scriptOrigin replaces pageOrigin
+ * Logout Helper:
+ * 	from App: scriptOrigin replaces pageOrigin ONLY FOR OIDC-CLIENT
+ * 	from Test: scriptOrigin replaces pageOrigin
+ * Logout Callback: 
+ * 	from App: normal
+ * 	from Test: scriptOrigin replaces pageOrigin
+ *  from Helper: scriptOrigin replaces pageOrigin
+ * Logout Handler: doesn't use either
+ * Popup Callback (from Test only): scriptOrigin replaces pageOrigin
+ * 
+ */

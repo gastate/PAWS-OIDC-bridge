@@ -20,7 +20,7 @@ PAWS_OIDC_bridge.main = function() {
 		}
 		fn = this.depth+">"+fn;
 
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		console.log( fn+": href = ", this.initial_href );
 
 		let scripts = [];
@@ -38,9 +38,9 @@ PAWS_OIDC_bridge.main = function() {
 PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
-				console.log( fn+": library & environment loaded" );
-				console.log( fn+": pageOrigin = ", this.ENV.pageOrigin );
-				console.log( fn+": scriptOrigin = ", this.ENV.scriptOrigin );
+				// console.log( fn+": library & environment loaded" );
+				// console.log( fn+": pageOrigin = ", this.ENV.pageOrigin );
+				// console.log( fn+": scriptOrigin = ", this.ENV.scriptOrigin );
 				if( window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
 					this.CLEARORIGINS = true;
 				}
@@ -66,8 +66,9 @@ PAWS_OIDC_bridge.initialize = function() {
 				let mgr = new Oidc.UserManager( this.ENV.loginSettings );
 				mgr.events.addUserLoaded( (user) => { 
 					this.user = user;
-					console.log( fn+"/UserLoaded: ", this.user );
-					this.update_status( "Loaded User: "+JSON.stringify(this.user.profile) );
+					// console.log( fn+"/UserLoaded: ", this.user );
+					// this.update_status( "Loaded User: "+JSON.stringify(this.user.profile) );
+					this.update_status( "Loaded User, ID = "+this.user.profile.gsupersonpantherid );
 				} );
 				mgr.events.addUserUnloaded( (...args) => { 
 					console.log( fn+"/UserUnloaded: ", JSON.stringify(args) );
@@ -85,23 +86,23 @@ PAWS_OIDC_bridge.initialize = function() {
 				mgr.events.addUserSignedOut( (...args) => { 
 					console.log( fn+"/UserSignedOut: ", args );
 				} );
-				console.log( fn+": UserManager is ready." );
-				this.update_status( fn+": UserManager is ready." );
+				// console.log( fn+": UserManager is ready." );
+				// this.update_status( fn+": UserManager is ready." );
 				this.mgr = mgr;
 				// console.log( fn+": AUTOLOGIN = ", this.AUTOLOGIN );
 				if( false !== this.AUTOLOGIN ) {
-					console.log( fn+": Attempting automatic login" );
+					// console.log( fn+": Attempting automatic login" );
 					this.update_status( fn+": Attempting automatic login" );
 					this.login_loop();
 				} else {
-					console.log( fn+": Automatic login disabled" );
+					// console.log( fn+": Automatic login disabled" );
 					this.update_status( fn+": Automatic login disabled" );
 				}
 			} );
 		}
 PAWS_OIDC_bridge.login_loop = function() {
 	let fn = this.depth+">PAWS_OIDC_bridge.login_loop";
-	console.log( fn+" invoked" );
+	// console.log( fn+" invoked" );
 	this.login( ( info ) => {
 		if( info.failure ) {
 			console.warn( fn+": Waiting "+this.ENV.login_loop_wait+"ms to retry")
@@ -111,23 +112,23 @@ PAWS_OIDC_bridge.login_loop = function() {
 }
 PAWS_OIDC_bridge.login = function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.login";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			this.mgr.signinSilent().then( () => {
-				console.log( fn+": Login Completed" );
+				// console.log( fn+": Login Completed" );
 				this.update_status( fn+": Login Completed" );
 				if( callback ) { callback({}); }
 			} ).catch( (err) => {
-				console.log( fn+": Login Failed! -- ", err.message );
+				// console.log( fn+": Login Failed! -- ", err.message );
 				this.update_status( fn+": Login Failed! -- "+err.message );
 				if( callback ) { callback( { failure:true, error:err, message:err.message } ); }
 			} );
-			console.log( fn+": In Progress..." );
+			// console.log( fn+": In Progress..." );
 		} );
 	};
 PAWS_OIDC_bridge.logout = function( callback ) {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			let tag = document.createElement("iframe");
 			if( this.ENV.iframe_style ) { for( key in this.ENV.iframe_style ) { tag.style[key] = this.ENV.iframe_style[key]; } }
@@ -135,29 +136,29 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 			tag.setAttribute( "sandbox", "allow-scripts allow-same-origin" ); // this should prevent iframe from navigating top window
 			let timeout, listener;
 			listener = (event) => {
-				console.log( fn+"/Event: ", event );
-				console.log( fn+"/Event: ", JSON.stringify(event) );
-				console.log( fn+"/Event: data = ", event.data );
+				// console.log( fn+"/Event: ", event );
+				// console.log( fn+"/Event: ", JSON.stringify(event) );
+				// console.log( fn+"/Event: data = ", event.data );
 				if( event.source === tag.contentWindow ) {
-					console.log( fn+"/Event: Processing Event from iframe" );
+					// console.log( fn+"/Event: Processing Event from iframe" );
 					clearTimeout(timeout);
 					window.removeEventListener( "message", listener );
 					tag.remove();
-					console.log( fn+"/Event: data = ", event.data );
+					// console.log( fn+"/Event: data = ", event.data );
 					let data = JSON.parse( event.data );
-					console.log( fn+"/Event: data = ", data );
+					// console.log( fn+"/Event: data = ", data );
 					if( data.failure ) {
 						let message = data; if( data.error ) { message = data.error; if( data.error.message ) { message = data.error.message; } }
-						console.error( fn+"/Event: Logout failed -- ", message );
+						// console.error( fn+"/Event: Logout failed -- ", message );
 						this.update_status( fn+"/Event: Logout failed -- " + message );
 					} else {
-						console.log( fn+"/Event: Logout succeded" );
+						// console.log( fn+"/Event: Logout succeded" );
 						this.update_status( fn+"/Event: Logout succeded" );
 					}
-					console.log( fn+"/Event: Invoking callback with ", data );
+					// console.log( fn+"/Event: Invoking callback with ", data );
 					if( callback ) { callback( data ); }
-				} else {
-					console.log( fn+"/Event: Ignoring Event NOT from iframe" );
+				// } else {
+				// 	console.log( fn+"/Event: Ignoring Event NOT from iframe" );
 				}
 			}
 			window.addEventListener( "message", listener );
@@ -166,7 +167,7 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 				window.removeEventListener( "message", listener );
 				tag.remove();
 				let message = "Logout request timed out after "+this.ENV.loginSettings.silentRequestTimeout/1000+" seconds";
-				console.error( fn+"/Event: Logout failed -- ", message );
+				// console.error( fn+"/Event: Logout failed -- ", message );
 				this.update_status( fn+"/Event: Logout failed -- " + message );
 				if( callback ) { callback( { failure:true, error:new Error(message), message:message } ); }
 			}, 2*this.ENV.loginSettings.silentRequestTimeout ); // double because two requests are made of auth server
@@ -175,21 +176,21 @@ PAWS_OIDC_bridge.logout = function( callback ) {
 	};
 PAWS_OIDC_bridge.popup_login = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.popup_login";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			this.mgr.signinPopup().then( () => {
-				console.log( fn+": Completed" );
+				// console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
+				// console.log( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 			} );
-			console.log( fn+": In Progress..." );
+			// console.log( fn+": In Progress..." );
 		} );
 	};
 PAWS_OIDC_bridge.loadscripts = function(urls,callback) {
 		let fn = this.depth+">PAWS_OIDC_bridge.loadscripts";
-		console.log( fn+" invoked: ", urls.join(", ") );
+		// console.log( fn+" invoked: ", urls.join(", ") );
 		let count = urls.length;
 		for( url of urls ) {
 			this.loadscript( url, () => {
@@ -204,7 +205,7 @@ PAWS_OIDC_bridge.loadscript = function(url,callback) {
 		let tag = document.createElement("script");
 		tag.setAttribute("src",url+"?"+(new Date()).toISOString())
 		tag.onload = function() {
-			console.log( fn+": loaded", url );
+			// console.log( fn+": loaded", url );
 			document.head.removeChild(tag);
 			if(callback) { callback(); }
 		};
@@ -229,7 +230,7 @@ PAWS_OIDC_bridge.await_prop = function( prop, callback, delay=0 ) {
 		let step = 1000;
 		if( this.ENV && this.ENV.await_interval ) { step = this.ENV.await_interval; }
 		if( undefined === this[prop] ) {
-			if( 0 == delay ) { this.update_status( fn+": waiting for "+prop ); }
+			// if( 0 == delay ) { this.update_status( fn+": waiting for "+prop ); }
 			delay += step
 			console.log( fn+":", prop, delay );
 			setTimeout( () => this.await_prop(prop,callback,delay), step );
@@ -241,40 +242,40 @@ PAWS_OIDC_bridge.await_prop = function( prop, callback, delay=0 ) {
 	};
 PAWS_OIDC_bridge.helper_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.helper_logout";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		this.await_prop( "user", () => {
 			this.mgr.signoutRedirect().then( () => {
-				console.log( fn+": Completed" );
+				// console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
+				// console.log( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 				let message = JSON.stringify( { failure: true, href: this.initial_href, error: err } );
 				console.log( fn+": Failure postMessage to origin ", this.ENV.pageOrigin );
 				parent.postMessage( message, this.ENV.pageOrigin );
 			} );
-			console.log( fn+": In Progress..." );
+			// console.log( fn+": In Progress..." );
 		} );
 	}
 PAWS_OIDC_bridge.callback_silent = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_silent";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
 			this.mgr.signinSilentCallback( this.initial_href ).then( () => {
-				console.log( fn+": Completed" );
+				// console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
 			} ).catch( (err) => {
-				console.error( fn+": Failed! ", err.message );
+				// console.error( fn+": Failed! ", err.message );
 				this.update_status( fn+": Failed! "+err.message );
 			} );
-			console.log( fn+": In Progress..." );
+			// console.log( fn+": In Progress..." );
 		} );
 	};
 PAWS_OIDC_bridge.callback_logout = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.callback_logout";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		this.await_prop( "mgr", () => {
-			console.log( fn+": href = ", this.initial_href );
+			// console.log( fn+": href = ", this.initial_href );
 			let message = JSON.stringify( { failure: false, href: this.initial_href } );
 			console.log( fn+": postMessage with message =", message );
 			console.log( fn+": postMessage with origin =", this.ENV.pageOrigin );
@@ -289,15 +290,15 @@ PAWS_OIDC_bridge.callback_popup = function() {
 				console.log( fn+": Completed" );
 				this.update_status( fn+": Completed" );
 			} ).catch( (err) => {
-				console.log( fn+": Failed! ", err.message );
+				console.log( fn+": Failed! ", err );
 				this.update_status( fn+": Failed! "+err.message );
 			} );
-			console.log( fn+": In Progress..." );
+			// console.log( fn+": In Progress..." );
 		} );
 	};
 PAWS_OIDC_bridge.logout_handler = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout_handler";
-		console.log( fn+" invoked" );
+		// console.log( fn+" invoked" );
 		console.log( fn+": No cleanup needed" );
 	};
 

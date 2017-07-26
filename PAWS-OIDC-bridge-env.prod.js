@@ -5,7 +5,7 @@ PAWS_OIDC_bridge.ENV = {
 	scriptOrigin: document.currentScript.src.substr(0, document.currentScript.src.indexOf("/", document.currentScript.src.indexOf("//") + 2)),
 	loginSettings: {
 		authority: "https://idp.gsu.edu/",
-		client_id: "",
+		client_id: "@!270D.2F71.07C0.8008!0001!376D.E063!0008!A721.DBA1",
 		redirect_uri: "https://cdn.gsu.edu/PAWS-OIDC-bridge/redirect.html",
 		silent_redirect_uri: "https://cdn.gsu.edu/PAWS-OIDC-bridge/silent.html",
 		popup_redirect_uri: "https://cdn.gsu.edu/PAWS-OIDC-bridge/popup.html",

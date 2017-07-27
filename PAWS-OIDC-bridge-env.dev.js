@@ -18,7 +18,7 @@ PAWS_OIDC_bridge.ENV = {
 		filterProtocolClaims: false,
 		loadUserInfo: true,
 		revokeAccessTokenOnSignout: true,
-		userinfoHeaderBug: true,
+		// userinfoHeaderBug: true,
 	},
 	uri_logout: "https://cdn-dev.gsu.edu/PAWS-OIDC-bridge/logout_helper.html",
 	await_interval: 400,
@@ -28,4 +28,5 @@ PAWS_OIDC_bridge.ENV = {
 		height: "20em",
 	},
 	status_elm: "PAWS-OIDC-bridge-status",
+	oidc_logger: console,
 }

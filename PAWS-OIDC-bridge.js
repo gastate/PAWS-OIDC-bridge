@@ -39,8 +39,10 @@ PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				// console.log( fn+": library & environment loaded" );
-				// console.log( fn+": pageOrigin = ", this.ENV.pageOrigin );
-				// console.log( fn+": scriptOrigin = ", this.ENV.scriptOrigin );
+				if( this.ENV.oidc_logger ) {
+					Oidc.Log.logger = this.ENV.oidc_logger;
+					Oidc.Log.level = Oidc.Log.DEBUG;
+				}
 				if( window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
 					this.CLEARORIGINS = true;
 				}

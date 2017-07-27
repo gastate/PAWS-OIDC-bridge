@@ -41,6 +41,7 @@ PAWS_OIDC_bridge.initialize = function() {
 				// console.log( fn+": library & environment loaded" );
 				if( this.ENV.oidc_logger ) {
 					Oidc.Log.logger = this.ENV.oidc_logger;
+					Oidc.Log.level = Oidc.Log.DEBUG;
 				}
 				if( window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
 					this.CLEARORIGINS = true;

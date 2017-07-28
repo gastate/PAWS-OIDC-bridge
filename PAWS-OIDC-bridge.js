@@ -39,9 +39,19 @@ PAWS_OIDC_bridge.initialize = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.initialize";
 			this.await_prop( "ENV", () => {
 				// console.log( fn+": library & environment loaded" );
-				if( this.ENV.oidc_logger ) {
-					Oidc.Log.logger = this.ENV.oidc_logger;
+				if( this.ENV.oidc_logging ) {
 					Oidc.Log.level = Oidc.Log.DEBUG;
+					Oidc.Log.logger = console;
+					console.log( fn+": logging ON" );
+				} else {
+					console.log( fn+": logging OFF" );
+				}
+				if( "undefined" === typeof this.ENV.logging_elm ) {
+					this.ENV.logging_elm = "PAWS-OIDC-bridge-log_button";
+				}
+				let tag = document.getElementById( this.ENV.logging_elm );
+				if( tag ) {
+					tag.innerText = this.ENV.oidc_logging ? "ON" : "OFF";
 				}
 				if( window.location.href.substr( window.location.href.indexOf("?")+1 ).indexOf( "clearorigins" ) >= 0 ) {
 					this.CLEARORIGINS = true;
@@ -303,6 +313,23 @@ PAWS_OIDC_bridge.logout_handler = function() {
 		// console.log( fn+" invoked" );
 		console.log( fn+": No cleanup needed" );
 	};
+PAWS_OIDC_bridge.log_toggle = function() {
+	let fn = this.depth+">PAWS_OIDC_bridge.log_toggle";
+	if( this.ENV.oidc_logging ) {
+		this.ENV.oidc_logging = false;
+		Oidc.Log.reset();
+		console.log( fn+": logging OFF" );
+	} else {
+		Oidc.Log.level = Oidc.Log.DEBUG;
+		this.ENV.oidc_logging = true;
+		Oidc.Log.logger = console;
+		console.log( fn+": logging ON" );
+	}
+	let tag = document.getElementById( this.ENV.logging_elm );
+	if( tag ) {
+		tag.innerText = this.ENV.oidc_logging ? "ON" : "OFF";
+	}
+}
 
 PAWS_OIDC_bridge.main();
 

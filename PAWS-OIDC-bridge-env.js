@@ -18,7 +18,7 @@ PAWS_OIDC_bridge.ENV = {
 		filterProtocolClaims: false,
 		loadUserInfo: true,
 		revokeAccessTokenOnSignout: true,
-		userinfoHeaderBug: true,
+		// userinfoHeaderBug: true,
 	},
 	uri_logout: "http://localhost:8080/logout_helper.html",
 	await_interval: 101, //ms

@@ -18,7 +18,7 @@ PAWS_OIDC_bridge.ENV = {
 		filterProtocolClaims: false,
 		loadUserInfo: true,
 		revokeAccessTokenOnSignout: true,
-		// userinfoHeaderBug: true,
+		userinfoHeaderBug: true,
 	},
 	uri_logout: "https://cdn-qa.gsu.edu/PAWS-OIDC-bridge/logout_helper.html",
 	await_interval: 400,

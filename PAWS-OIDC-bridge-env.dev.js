@@ -28,5 +28,5 @@ PAWS_OIDC_bridge.ENV = {
 		height: "20em",
 	},
 	status_elm: "PAWS-OIDC-bridge-status",
-	oidc_logging: true,
+	// oidc_logging: true,
 }

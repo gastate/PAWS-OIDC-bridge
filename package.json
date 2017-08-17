@@ -1,0 +1,19 @@
+{
+    "name": "PAWS-OIDC-bridge",
+    "description": "PAWS Authentication Integration",
+    "author": "Georgia State University",
+    "homepage": "http://www.gsu.edu",
+    "private": true,
+    "scripts": {
+        "deps": "npm install",
+        "build": "echo no building - use update to refresh libraries",
+        "test": "echo no tests",
+		"start": "http-server",
+        "update": "echo retrieving oidc-client.js...; curl -O https://raw.githubusercontent.com/gastate/oidc-client-js/dev/dist/oidc-client.js"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "http-server": "*"
+    }
+}

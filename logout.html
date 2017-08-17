@@ -1,13 +1,13 @@
 <html>
 	<head>
-		<title>PAWS-OIDC-bridge Logout Callback Page</title>
+		<title>PAWS Authentication Integration Iframe Logout Confirmation</title>
 		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }; PAWS_OIDC_bridge.AUTOLOGIN = false;</script>
 		<script src="PAWS-OIDC-bridge.js"></script>
 	</head>
 	<body>
-		<h1>PAWS-OIDC-bridge Logout Callback Page</h1>
+		<h1>PAWS Authentication Integration Iframe Logout Confirmation</h1>
 		<div>
-			<p>This page will be loaded in a hidden iframe, redirected from the auth server.  It will attempt to pass login information to the iframe parent.</p>
+			<p>Signaling logout success to iframe parent</p>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
 		<script>PAWS_OIDC_bridge.callback_logout()</script>

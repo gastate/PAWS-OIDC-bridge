@@ -1,13 +1,13 @@
 <html>
 	<head>
-		<title>PAWS-OIDC-bridge Popup Login Callback Page</title>
+		<title>PAWS Authentication Integration Popup Login Confirmation</title>
 		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }; PAWS_OIDC_bridge.AUTOLOGIN = false;</script>
 		<script src="PAWS-OIDC-bridge.js"></script>
 	</head>
 	<body>
-		<h1>PAWS-OIDC-bridge Popup Login Callback Page</h1>
+		<h1>PAWS Authentication Integration Popup Login Confirmation</h1>
 		<div>
-			<p>This page should be loaded in login popup window, redirected from the auth server.  It will attempt to pass login information to the parent window.</p>
+			<p>Signaling login success to popup parent</p>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
 		<script>PAWS_OIDC_bridge.callback_popup()</script>

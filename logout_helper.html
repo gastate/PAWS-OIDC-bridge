@@ -1,13 +1,13 @@
 <html>
 	<head>
-		<title>PAWS-OIDC-bridge Silent Logout Helper Page</title>
+		<title>PAWS Authentication Integration Iframe Logout Initiator</title>
 		<script>if( typeof PAWS_OIDC_bridge === "undefined" ) { PAWS_OIDC_bridge = {}; }; PAWS_OIDC_bridge.SPLITORIGINS = true;</script>
 		<script src="PAWS-OIDC-bridge.js"></script>
 	</head>
 	<body>
-		<h1>PAWS-OIDC-bridge Silent Logout Helper Page</h1>
+		<h1>PAWS Authentication Integration Iframe Logout Initiator</h1>
 		<div>
-			<p>This page should be loaded in a hidden iframe.  It will attempt to pass login information to the iframe parent.</p>
+			<p>Redirecting iframe to authentication server to initiate logout</p>
 			<div id="PAWS-OIDC-bridge-status"></div>
 		</div>
 		<script>PAWS_OIDC_bridge.helper_logout()</script>

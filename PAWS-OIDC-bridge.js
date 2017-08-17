@@ -42,9 +42,9 @@ PAWS_OIDC_bridge.initialize = function() {
 				if( this.ENV.oidc_logging ) {
 					Oidc.Log.level = Oidc.Log.DEBUG;
 					Oidc.Log.logger = console;
-					console.log( fn+": logging ON" );
+					console.log( fn+": log messages ON" );
 				} else {
-					console.log( fn+": logging OFF" );
+					console.log( fn+": log messages OFF" );
 				}
 				if( "undefined" === typeof this.ENV.logging_elm ) {
 					this.ENV.logging_elm = "PAWS-OIDC-bridge-log_button";
@@ -312,6 +312,7 @@ PAWS_OIDC_bridge.logout_handler = function() {
 		let fn = this.depth+">PAWS_OIDC_bridge.logout_handler";
 		// console.log( fn+" invoked" );
 		console.log( fn+": No cleanup needed" );
+		this.update_status( fn+": No cleanup needed" );
 	};
 PAWS_OIDC_bridge.log_toggle = function() {
 	let fn = this.depth+">PAWS_OIDC_bridge.log_toggle";
